@@ -1,12 +1,10 @@
 const User = require("../models/user");
+const handleError = require('../utils/errorHandler');
 
 const getUsers = (req, res) => {
     User.find({})
         .then((users) => res.status(200).send(users))
-        .catch((err) => {
-            console.error(err);
-            return res.status(500).send({ message: err.message })
-        });
+        .catch((err) => handleError(err, res));
 };
 
 const createUser = (req, res) => {
@@ -14,13 +12,7 @@ const createUser = (req, res) => {
     
     User.create({ name, avatar })
         .then((user) => res.status(201).send(user))
-        .catch((err) => {
-            console.error(err);
-            if (err.name === "validationError") {
-                return res.status(400).send({ message: err.message });
-            }
-            return res.status(500).send({ message: err.message });
-        });
+        .catch((err) => handleError(err, res));
 };
 
 const getUser = (req, res) => {
@@ -28,15 +20,7 @@ const getUser = (req, res) => {
     User.findById(userId)
         .orFail()
         .then((user) => res.status(200).send(user))
-        .catch((err) => {
-            console.error(err);
-            if (err.name = "DocumentNotFoundError") {
-                // return res.status(404).send({ message: err.message });
-            } else if (err.name = "CastError") {
-
-            }
-            return res.status(500).send({ message: err.message });
-        })
+        .catch((err) => handleError(err, res));
 }
  
 module.exports = { getUsers, createUser, getUser };
