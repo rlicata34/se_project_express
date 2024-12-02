@@ -1,16 +1,15 @@
-const { ERROR_CODES, ERROR_MESSAGES } = require('./errors');
+const { ERROR_CODES } = require('./errors');
 
 const handleError = (err, res) => {
   console.error(err); 
 
   if (err.name === 'ValidationError' || err.name === 'CastError') {
-    return res.status(ERROR_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.BAD_REQUEST });
-  }
-  if (err.name === 'DocumentNotFoundError') {
-    return res.status(ERROR_CODES.NOT_FOUND).json({ message: ERROR_MESSAGES.NOT_FOUND });
-  }
+    return res.status(ERROR_CODES.BAD_REQUEST).json({ message: err.message });
+    } else if (err.name === 'DocumentNotFoundError') {
+        return res.status(ERROR_CODES.NOT_FOUND).json({ message: err.message });
+      }
 
-  return res.status(ERROR_CODES.SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+  return res.status(ERROR_CODES.SERVER_ERROR).json({ message: err.message });
 };
 
 module.exports = handleError;
