@@ -1,4 +1,4 @@
-const CLothingItem = require("../models/clothingItem");
+const CLothingItem = require("../models/clothingitem");
 const handleError = require("../utils/errorHandler");
 
 
