@@ -6,6 +6,6 @@ const handleError = require("../utils/errorHandler");
 router.use("/users", userRouter);
 router.use("/items", clothingItemRouter);
 
-router.use((req, res) => handleError(err, res));
+router.use((req, res ) => handleError());
 
 module.exports = router;
