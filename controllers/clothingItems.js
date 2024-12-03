@@ -4,7 +4,7 @@ const handleError = require("../utils/errorHandler");
 
 const getItems = (req, res) => {
   ClothingItem.find({}) 
-    .then((items) => res.status(200).send(items))
+    .then((items) => res.send(items))
     .catch((err) => handleError(err, res));
 };
 
@@ -24,7 +24,7 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(200).send({ message: "Clothing item deleted successfully", item }))
+    .then((item) => res.send({ message: "Clothing item deleted successfully", item }))
     .catch((err) => handleError(err, res));
 };
 
@@ -37,7 +37,7 @@ const likeItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(200).send({ message: "Item liked successfully", item}))
+    .then((item) => res.send({ message: "Item liked successfully", item}))
     .catch((err) => handleError(err, res));
 };
 
@@ -50,7 +50,7 @@ const dislikeItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(200).send({ message: "Item disliked successfully", item}))
+    .then((item) => res.send({ message: "Item disliked successfully", item}))
     .catch((err) => handleError(err, res));
 }
 

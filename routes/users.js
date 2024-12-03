@@ -7,4 +7,3 @@ router.post("/", createUser);
 
 module.exports = router;
 
-// curl http://localhost:3001/users
