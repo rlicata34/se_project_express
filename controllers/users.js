@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
-const handleError = require('../utils/errorHandler');
+const handleError = require("../utils/errorHandler");
+const { JWT_SECRET } = require("../utils/config");
 
 const getUsers = (req, res) => {
     User.find({})
@@ -53,6 +54,37 @@ const getUser = (req, res) => {
         .orFail()
         .then((user) => res.send(user))
         .catch((err) => handleError(err, res));
-}
+};
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Incorrect email or password'));
+      }
+
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        // the hashes didn't match, rejecting the promise
+        return Promise.reject(new Error('Incorrect email or password'));
+      }
+
+      // authentication successful
+      res.send({ message: 'Everything good!' });
+    })
+    .then((user) => {
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+        res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+};
  
-module.exports = { getUsers, createUser, getUser };
+module.exports = { getUsers, createUser, getUser, login };
