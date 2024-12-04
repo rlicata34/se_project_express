@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const handleError = require("../utils/errorHandler");
 const { JWT_SECRET } = require("../utils/config");
@@ -62,7 +63,7 @@ const login = (req, res) => {
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Incorrect email or password'));
+        return Promise.reject(new Error("Incorrect email or password"));
       }
 
       return bcrypt.compare(password, user.password);
@@ -70,11 +71,11 @@ const login = (req, res) => {
     .then((matched) => {
       if (!matched) {
         // the hashes didn't match, rejecting the promise
-        return Promise.reject(new Error('Incorrect email or password'));
+        return Promise.reject(new Error("Incorrect email or password"));
       }
 
       // authentication successful
-      res.send({ message: 'Everything good!' });
+      res.send({ message: "Everything good!" });
     })
     .then((user) => {
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
