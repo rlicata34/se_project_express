@@ -17,23 +17,29 @@ const createItem = (req, res) => {
         .catch((err) => handleError(err, res))
 };
 
+
+// Add new error code and message to utils
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  console.log(itemId);
-  
+  const { userId } = req.user._id;
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.send({ message: "Clothing item deleted successfully", item }))
+    .then((item) => {
+      if (item.owner.toString() !== userId) {
+        return Promise.reject(new Error("You do not have permission to delete this item"));
+      }
+      res.send({ message: "Clothing item deleted successfully", item })
+    })
     .catch((err) => handleError(err, res));
 };
 
 const likeItem = (req, res) => {
-  const userId = req.user._id;
+  const { userId } = req.user._id;
 
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
-    { $addToSet: { likes: userId } }, 
+    { $addToSet: { likes: {userId} } }, 
     { new: true }
   )
     .orFail()
@@ -42,11 +48,11 @@ const likeItem = (req, res) => {
 };
 
 const dislikeItem = (req, res) => {
-  const userId = req.user._id;
+  const { userId } = req.user._id;
 
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
-    { $pull: { likes: userId } }, 
+    { $pull: { likes: {userId} } }, 
     { new: true }
   )
     .orFail()

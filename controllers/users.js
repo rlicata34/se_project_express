@@ -4,12 +4,13 @@ const User = require("../models/user");
 const handleError = require("../utils/errorHandler");
 const { JWT_SECRET } = require("../utils/config");
 
-const getUsers = (req, res) => {
-    User.find({})
-        .then((users) => res.send(users))
-        .catch((err) => handleError(err, res));
-};
+// const getUsers = (req, res) => {
+//     User.find({})
+//         .then((users) => res.send(users))
+//         .catch((err) => handleError(err, res));
+// };
 
+//Add new error code and message to utils
 const createUser = (req, res) => {
     const { name, avatar, email, password } = req.body;
     
@@ -49,18 +50,21 @@ const createUser = (req, res) => {
         });
 };
 
-const getUser = (req, res) => {
-    const { userId } = req.params;
-    User.findById(userId)
-        .orFail()
-        .then((user) => res.send(user))
-        .catch((err) => handleError(err, res));
-};
+// const getUser = (req, res) => {
+//     const { userId } = req.params;
+//     User.findById(userId)
+//         .orFail()
+//         .then((user) => res.send(user))
+//         .catch((err) => handleError(err, res));
+// };
 
+
+//Add new error code and message to utils
 const login = (req, res) => {
   const { email, password } = req.body;
 
   User.findOne({ email })
+    .select("+password")
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error("Incorrect email or password"));
@@ -87,5 +91,39 @@ const login = (req, res) => {
         .send({ message: err.message });
     });
 };
+
+//Add new error code and message to utils
+const getCurrentUser = (req, res) => {
+    const { userId } = req.user._id;
+
+    User.findById(userId)
+        .orFail()
+        .then((user) => res.send(user))
+        .catch((err) => handleError(err, res));
+};
+
+
+//Add new error code and message to utils
+const updateProfile = (req, res) => {
+    const { userId } = req.user._id;
+    const { name, avatar } = req.body;
+
+    User.findByIdAndUpdate(
+        { userId }, 
+        { name, avatar },
+        {
+            new: true,
+            runValidators: true
+        }
+    )
+        .orFail()
+        .then((user) => res.send(user))
+        .catch((err) => handleError(err, res));
+}
  
-module.exports = { getUsers, createUser, getUser, login };
+module.exports = { 
+    createUser, 
+    getCurrentUser, 
+    login, 
+    updateProfile 
+};
