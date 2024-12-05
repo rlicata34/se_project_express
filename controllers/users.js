@@ -22,10 +22,9 @@ const createUser = (req, res) => {
         throw error;
       }
     })
-
-  bcrypt.hash(password, 10)
+    .then(() => bcrypt.hash(password, 10))
     .then((hash) => {
-      User.create({
+      return User.create({
         name,
         avatar,
         email,
@@ -38,8 +37,6 @@ const createUser = (req, res) => {
     .catch((err) => handleError(err, res));
 };
 
-
-// Add new error code and message to utils
 const login = (req, res) => {
   const { email, password } = req.body;
 
@@ -49,9 +46,8 @@ const login = (req, res) => {
       if (!user) {
         return Promise.reject(new Error("Incorrect email or password"));
       }
-
-      return bcrypt.compare(password, user.password);
     })
+    .then((user) => bcrypt.compare({password}, user.password))
     .then((matched) => {
       if (!matched) {
         return Promise.reject(new Error("Incorrect email or password"));
@@ -62,14 +58,9 @@ const login = (req, res) => {
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
         res.send({ token });
     })
-    .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch((err) => handleError(err, res));
 };
 
-// Add new error code and message to utils
 const getCurrentUser = (req, res) => {
     const userId = req.user._id;
 
