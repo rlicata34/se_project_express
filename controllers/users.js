@@ -52,7 +52,6 @@ const login = (req, res) => {
         JWT_SECRET,
         { expiresIn: "7d" }
       )
-
       res.send({ token });
     })
     .catch((err) => handleError(err, res));
@@ -62,23 +61,21 @@ const getCurrentUser = (req, res) => {
     const userId = req.user._id;
 
     User.findById(userId)
-        .orFail()
-        .then((user) => {
-          const { _id, email, avatar, name } = user;
-          res.send({
-            _id,
-            email,
-            avatar,
-            name
-          });
-        })
-        .catch((err) => handleError(err, res));
+      .orFail()
+      .then((user) => {
+        const { _id, email, avatar, name } = user;
+        res.send({
+          _id,
+          email,
+          avatar,
+          name
+        });
+      })
+      .catch((err) => handleError(err, res));
 };
 
-
-// Add new error code and message to utils
 const updateProfile = (req, res) => {
-    const userId = req.user._id;
+    const userId = req?.user?._id;
     const { name, avatar } = req.body;
 
     User.findByIdAndUpdate(

@@ -10,7 +10,7 @@ const getItems = (req, res) => {
 
 const createItem = (req, res) => {
     const { name, weather, imageUrl } = req.body;
-    const userId = req.user._id;
+    const userId = req?.user?._id;
   
     ClothingItem.create({ name, weather, imageUrl, owner: userId })
         .then((item) => res.status(201).send(item))
