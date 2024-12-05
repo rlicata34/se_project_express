@@ -1,6 +1,7 @@
 const ERROR_CODES = {
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
   SERVER_ERROR: 500,
@@ -28,6 +29,11 @@ const handleError = (err, res) => {
     return res
       .status(ERROR_CODES.CONFLICT)
       .send({ message: "Email is already in use" })
+  }
+  if (err.message === "You do not have permission to delete this item") {
+    return res
+      .status(ERROR_CODES.FORBIDDEN)
+      .send({ message: "You do not have permission to delete this item" })
   }
 
   return res
