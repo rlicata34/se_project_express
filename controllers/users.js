@@ -39,15 +39,7 @@ const createUser = (req, res) => {
             avatar: user.avatar,
         })
         )
-        .catch((err) => {
-            // Handle MongoDB duplicate key error
-            if (err.code === 11000) {
-                err.message = "Email already exists.";
-                err.statusCode = 409;
-            }
-            // Use custom error handler
-            handleError(err, res);
-        });
+        .catch((err) => handleError(err, res));
 };
 
 // const getUser = (req, res) => {

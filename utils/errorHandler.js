@@ -9,6 +9,11 @@ const handleError = (err, res) => {
   if (err.name === 'DocumentNotFoundError') {
       return res.status(ERROR_CODES.NOT_FOUND).json({ message: "The server cannot find the requested resource." });
     }
+  if (err.code === 11000) {
+    return res
+      .status(ERROR_CODES.CONFLICT || 409)
+      .json({ message: "Duplicate key error: A resource with the same key already exists." });
+  }
 
   return res.status(ERROR_CODES.SERVER_ERROR).json({ message: "An error has occurred on the server." });
 };
