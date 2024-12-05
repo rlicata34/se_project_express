@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingitem");
-const handleError = require("../utils/errorHandler");
+const handleError = require("../utils/errors");
 
 
 const getItems = (req, res) => {
