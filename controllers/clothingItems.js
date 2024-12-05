@@ -29,7 +29,7 @@ const deleteItem = (req, res) => {
       if (item.owner.toString() !== userId) {
         return Promise.reject(new Error("You do not have permission to delete this item"));
       }
-      res.send({ message: "Clothing item deleted successfully", item })
+      return res.send({ message: "Clothing item deleted successfully", item })
     })
     .catch((err) => handleError(err, res));
 };

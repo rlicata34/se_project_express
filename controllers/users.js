@@ -10,7 +10,7 @@ const { JWT_SECRET } = require("../utils/config");
 //         .catch((err) => handleError(err, res));
 // };
 
-//Add new error code and message to utils
+
 const createUser = (req, res) => {
     const { name, avatar, email, password } = req.body;
     
@@ -59,7 +59,7 @@ const createUser = (req, res) => {
 // };
 
 
-//Add new error code and message to utils
+// Add new error code and message to utils
 const login = (req, res) => {
   const { email, password } = req.body;
 
@@ -79,7 +79,7 @@ const login = (req, res) => {
       }
 
       // authentication successful
-      res.send({ message: "Everything good!" });
+      return res.send({ message: "Everything good!" });
     })
     .then((user) => {
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
@@ -92,7 +92,7 @@ const login = (req, res) => {
     });
 };
 
-//Add new error code and message to utils
+// Add new error code and message to utils
 const getCurrentUser = (req, res) => {
     const { userId } = req.user._id;
 
@@ -103,7 +103,7 @@ const getCurrentUser = (req, res) => {
 };
 
 
-//Add new error code and message to utils
+// Add new error code and message to utils
 const updateProfile = (req, res) => {
     const { userId } = req.user._id;
     const { name, avatar } = req.body;
