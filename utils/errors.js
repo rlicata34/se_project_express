@@ -24,10 +24,10 @@ const handleError = (err, res) => {
       .status(ERROR_CODES.UNAUTHORIZED)
       .send({ message: "Incorrect email or password" })
   }
-  if (err.message === "The user already exists") {
+  if (err.message === "A user with this email already exists") {
     return res
-      .status(CONFLICT)
-      .send({ message: "Email already exists" })
+      .status(ERROR_CODES.CONFLICT)
+      .send({ message: "Email is already in use" })
   }
 
   return res

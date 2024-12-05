@@ -18,7 +18,6 @@ const createUser = (req, res) => {
     .then((user) => {
       if (user) {
         const error = new Error("A user with this email already exists");
-        error.statusCode = ERROR_CODES.CONFLICT;
         throw error;
       }
     })
@@ -40,23 +39,21 @@ const createUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findOne({ email })
-    .select("+password")
+  if (!email || !password) {
+    return res 
+      .status(ERROR_CODES.BAD_REQUEST)
+      .send({ message: "Email and password fields are required" });
+  }
+
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error("Incorrect email or password"));
-      }
-    })
-    .then((user) => bcrypt.compare({password}, user.password))
-    .then((matched) => {
-      if (!matched) {
-        return Promise.reject(new Error("Incorrect email or password"));
-      }
-      return res.send({ message: "Everything good!" });
-    })
-    .then((user) => {
-        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
-        res.send({ token });
+      const token = jwt.sign(
+        { _id: user._id },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+      )
+
+      res.send({ token });
     })
     .catch((err) => handleError(err, res));
 };
