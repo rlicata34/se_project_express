@@ -14,7 +14,7 @@ const createUser = (req, res) => {
       .send({ message: "The email and password fields are required" })
   }
 
-  User.findOne({ email })
+  return User.findOne({ email })
     .then((user) => {
       if (user) {
         const error = new Error("A user with this email already exists");
@@ -22,8 +22,7 @@ const createUser = (req, res) => {
       }
     })
     .then(() => bcrypt.hash(password, 10))
-    .then((hash) => {
-      return User.create({
+    .then((hash) => {return User.create({
         name,
         avatar,
         email,
