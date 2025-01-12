@@ -1,23 +1,23 @@
 const ClothingItem = require("../models/clothingitem");
-const { handleError, ERROR_CODES } = require("../utils/errors");
+const { ERROR_CODES } = require("../utils/errors");
 
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({}) 
     .then((items) => res.send(items))
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
     const { name, weather, imageUrl } = req.body;
     const userId = req?.user?._id;
   
     ClothingItem.create({ name, weather, imageUrl, owner: userId })
         .then((item) => res.status(201).send(item))
-        .catch((err) => handleError(err, res))
+        .catch(next)
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
@@ -30,10 +30,10 @@ const deleteItem = (req, res) => {
       }
       return item.deleteOne().then(() => res.send({ message: "Item successfully deleted" }));
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const userId = req?.user?._id;
 
   ClothingItem.findByIdAndUpdate(
@@ -43,10 +43,10 @@ const likeItem = (req, res) => {
   )
     .orFail()
     .then((item) => res.send({ message: "Item liked successfully", item}))
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   const userId = req?.user?._id;
 
   ClothingItem.findByIdAndUpdate(
@@ -56,7 +56,7 @@ const dislikeItem = (req, res) => {
   )
     .orFail()
     .then((item) => res.send({ message: "Item disliked successfully", item}))
-    .catch((err) => handleError(err, res));
+    .catch(next);
 }
 
 module.exports =  { getItems, createItem, deleteItem, likeItem, dislikeItem };

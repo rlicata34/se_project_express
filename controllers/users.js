@@ -1,11 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { ERROR_CODES, handleError } = require("../utils/errors");
+const { ERROR_CODES } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
@@ -26,10 +26,10 @@ const createUser = (req, res) => {
     .then(() => {
       res.status(201).send({email, name, avatar});
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -47,10 +47,10 @@ const login = (req, res) => {
       )
       res.send({ token });
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
     const userId = req.user._id;
 
     User.findById(userId)
@@ -64,10 +64,10 @@ const getCurrentUser = (req, res) => {
           name
         });
       })
-      .catch((err) => handleError(err, res));
+      .catch(next);
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
     const userId = req?.user?._id;
     const { name, avatar } = req.body;
 
@@ -81,7 +81,7 @@ const updateProfile = (req, res) => {
     )
         .orFail()
         .then((user) => res.send({ name: user.name, avatar: user.avatar }))
-        .catch((err) => handleError(err, res));
+        .catch(next);
 }
  
 module.exports = { 
