@@ -1,5 +1,11 @@
 const ClothingItem = require("../models/clothingitem");
-const { ERROR_CODES } = require("../utils/errors");
+const { 
+  BadRequestError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ConflictError
+} = require("../utils/errors");
 
 
 const getItems = (req, res, next) => {
@@ -14,7 +20,13 @@ const createItem = (req, res, next) => {
   
     ClothingItem.create({ name, weather, imageUrl, owner: userId })
         .then((item) => res.status(201).send(item))
-        .catch(next)
+        .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError("Invalid request: One or more fields contain invalid data."))
+      } else {
+        next(err);
+      }
+    });
 };
 
 const deleteItem = (req, res, next) => {
@@ -24,9 +36,7 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (String(item.owner) !== req.user._id) {
-        return res
-          .status(ERROR_CODES.FORBIDDEN)
-          .send({ message: "You do not have permission to delete this item" })
+        throw new ForbiddenError("You do not have permission to delete this item");
       }
       return item.deleteOne().then(() => res.send({ message: "Item successfully deleted" }));
     })

@@ -1,7 +1,13 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { ERROR_CODES } = require("../utils/errors");
+const { 
+  BadRequestError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ConflictError
+} = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 
@@ -9,16 +15,13 @@ const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(ERROR_CODES.BAD_REQUEST)
-      .send({ message: "The email and password fields are required" })
+    throw new BadRequestError("The email and password fields are required");
   }
 
   return User.findOne({ email })
     .then((user) => {
       if (user) {
-        const error = new Error("A user with this email already exists");
-        throw error;
+        throw new ConflictError("A user with this email already exists");
       }
     })
     .then(() => bcrypt.hash(password, 10))
@@ -26,16 +29,20 @@ const createUser = (req, res, next) => {
     .then(() => {
       res.status(201).send({email, name, avatar});
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError("Invalid request: One or more fields contain invalid data."))
+      } else {
+        next(err);
+      }
+    });
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res 
-      .status(ERROR_CODES.BAD_REQUEST)
-      .send({ message: "Email and password fields are required" });
+    throw new BadRequestError("The email and password fields are required");
   }
 
   return User.findUserByCredentials(email, password)
@@ -47,7 +54,13 @@ const login = (req, res, next) => {
       )
       res.send({ token });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError("Invalid request: One or more fields contain invalid data."))
+      } else {
+        next(err);
+      }
+    });
 };
 
 const getCurrentUser = (req, res, next) => {
@@ -81,7 +94,13 @@ const updateProfile = (req, res, next) => {
     )
         .orFail()
         .then((user) => res.send({ name: user.name, avatar: user.avatar }))
-        .catch(next);
+        .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError("Invalid request: One or more fields contain invalid data."))
+      } else {
+        next(err);
+      }
+    });
 }
  
 module.exports = { 
