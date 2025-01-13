@@ -3,13 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
 const errorHandler = require("./middlewares/errorHandler");
-const { 
-  BadRequestError,
-  UnauthorizedError,
-  ForbiddenError,
-  NotFoundError,
-  ConflictError
-} = require("./utils/errors");
+const { errors } = require('celebrate');
+
 const app = express();
 const { PORT = 3001 } = process.env;
 
@@ -23,6 +18,7 @@ mongoose
 app.use(cors());
 app.use(express.json());
 app.use("/", mainRouter);
+app.use(errors());
 app.use(errorHandler);
 
 app.listen(PORT, () => {
