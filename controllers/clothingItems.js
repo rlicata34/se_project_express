@@ -40,7 +40,15 @@ const deleteItem = (req, res, next) => {
       }
       return item.deleteOne().then(() => res.send({ message: "Item successfully deleted" }));
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        next(new NotFoundError("Item with the specified ID not found"));
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError("Invalid request: One or more fields contain invalid data."));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const likeItem = (req, res, next) => {
@@ -53,7 +61,15 @@ const likeItem = (req, res, next) => {
   )
     .orFail()
     .then((item) => res.send({ message: "Item liked successfully", item}))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        next(new NotFoundError("Item with the specified ID not found"));
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError("Invalid request: One or more fields contain invalid data."));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const dislikeItem = (req, res, next) => {
@@ -66,7 +82,15 @@ const dislikeItem = (req, res, next) => {
   )
     .orFail()
     .then((item) => res.send({ message: "Item disliked successfully", item}))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        next(new NotFoundError("Item with the specified ID not found"));
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError("Invalid request: One or more fields contain invalid data."));
+      } else {
+        next(err);
+      }
+    });
 }
 
 module.exports =  { getItems, createItem, deleteItem, likeItem, dislikeItem };
