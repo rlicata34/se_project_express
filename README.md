@@ -21,3 +21,7 @@ This is the backend service for the What to Wear application, designed to help u
 ## Future Improvements
 
 Add a search & Filter feature to filter items by weather, likes and owner.
+
+## Domain name
+
+www.wtwr-app.mindhackers.org
