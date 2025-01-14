@@ -8,8 +8,9 @@ This is the backend service for the What to Wear application, designed to help u
     * Clothing Item Management: Create, delete, and like/dislike clothing items.
     * Weather-Specific Classification: Items are categorized by weather type (hot, warm, cold).
     * Database Integration: Persistent storage using MongoDB and Mongoose.
-    *User registration to the database.
-    *User authentication: JWT created upon login to authorize requests.
+    * User registration to the database.
+    * User authentication: JWT created upon login to authorize requests.
+    * Custom Middlewares for logging and error handling.
 
 ## Technologies Used
 
@@ -17,6 +18,8 @@ This is the backend service for the What to Wear application, designed to help u
     * Express.js
     * MongoDB
     * Mongoose
+    * Celebrate
+    * Dotenv
 
 ## Future Improvements
 
