@@ -1,10 +1,9 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { 
-  BadRequestError,
-  ConflictError
-} = require("../utils/errors");
+const BadRequestError = require("../utils/errors/BadRequestError");
+const NotFoundError = require("../utils/errors/NotFoundError");
+const ConflictError = require("../utils/errors/ConflictError");
 const { JWT_SECRET } = require("../utils/config");
 
 
@@ -74,7 +73,13 @@ const getCurrentUser = (req, res, next) => {
           name
         });
       })
-      .catch(next);
+      .catch((err) => {
+        if (err.name === 'DocumentNotFoundError') { 
+          next(new NotFoundError("Data not found")); 
+        } else {
+          next(err);
+        }
+      });
 };
 
 const updateProfile = (req, res, next) => {
@@ -82,21 +87,23 @@ const updateProfile = (req, res, next) => {
     const { name, avatar } = req.body;
 
     User.findByIdAndUpdate(
-        userId, 
-        { name, avatar },
-        {
-            new: true,
-            runValidators: true
-        }
-    )
-        .orFail()
-        .then((user) => res.send({ name: user.name, avatar: user.avatar }))
-        .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError("Invalid request: One or more fields contain invalid data."))
-      } else {
-        next(err);
+      userId, 
+      { name, avatar },
+      {
+        new: true,
+        runValidators: true
       }
+    )
+      .orFail()
+      .then((user) => res.send({ name: user.name, avatar: user.avatar }))
+      .catch((err) => {
+        if (err.name === 'DocumentNotFoundError') { 
+          next(new NotFoundError("Data not found")); 
+        } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+          next(new BadRequestError("Invalid request: One or more fields contain invalid data."))
+        } else {
+          next(err);
+        }
     });
 }
  
